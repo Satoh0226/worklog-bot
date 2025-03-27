@@ -7,7 +7,13 @@ const GAS_WEBHOOK_URL = process.env.GAS_WEBHOOK_URL;
 
 // Discordクライアント設定
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+  intents: [
+    GatewayIntentBits.Guilds,              // サーバー情報
+    GatewayIntentBits.GuildMessages,       // メッセージ情報
+    GatewayIntentBits.MessageContent,      // メッセージ内容
+    GatewayIntentBits.GuildMembers,        // サーバーメンバー情報
+    GatewayIntentBits.GuildPresences       // プレゼンス（オンライン状態）
+  ],
 });
 
 // 業務内容リスト
