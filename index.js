@@ -74,16 +74,16 @@ client.on("interactionCreate", async (interaction) => {
   const selectedTask = interaction.customId === "selectTask" ? interaction.values[0] : null;
 
   if (selectedStaff && selectedTask) {
-    // Google Apps Script に送信
+    // Google Apps Scriptに送信
     await axios.post(GAS_WEBHOOK_URL, {
       username: selectedStaff,
       task_type: selectedTask,
-      task_detail: "詳細未記入",
+      task_detail: "詳細未記入",  // 必要であればここに詳細内容を追加
     });
 
     await interaction.reply({
       content: `✅ ${selectedStaff} が「${selectedTask}」を記録しました！`,
-      ephemeral: true,
+      ephemeral: true,  // 返信はメッセージを送ったユーザーにのみ表示されます
     });
   }
 });
