@@ -1,9 +1,11 @@
+require('dotenv').config();  // .envファイルを読み込む
+
 const { Client, GatewayIntentBits, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const axios = require("axios");
 
 // BotトークンとGASのWebhook URL
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const GAS_WEBHOOK_URL = process.env.GAS_WEBHOOK_URL;
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;  // 環境変数からトークンを取得
+const GAS_WEBHOOK_URL = process.env.GAS_WEBHOOK_URL;  // GASのWebhook URLを環境変数から取得
 
 // Discordクライアント設定
 const client = new Client({
@@ -70,12 +72,13 @@ client.on("messageCreate", async (message) => {
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isStringSelectMenu()) return;
 
+  // 選ばれた担当者と業務内容を取得
   const selectedStaff = interaction.customId === "selectStaff" ? interaction.values[0] : null;
   const selectedTask = interaction.customId === "selectTask" ? interaction.values[0] : null;
 
   if (selectedStaff && selectedTask) {
     try {
-      // Google Apps Scriptに送信
+      // Google Apps Scriptにデータ送信
       await axios.post(GAS_WEBHOOK_URL, {
         username: selectedStaff,
         task_type: selectedTask,
@@ -98,4 +101,4 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 // Botログイン
-client.login(DISCORD_TOKEN);
+client.login(DISCORD_TOKEN);  // 環境変数からDiscordトークンを取得
