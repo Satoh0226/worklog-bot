@@ -37,7 +37,7 @@ client.on("messageCreate", async (message) => {
 
   // 担当者選択のプルダウン
   const staffSelect = new StringSelectMenuBuilder()
-    .setCustomId("selectStaff")
+    .setCustomId("selectStaff")  // 担当者のプルダウンID
     .setPlaceholder("担当者を選択")
     .addOptions(
       staffList.map((staff) => ({
@@ -48,7 +48,7 @@ client.on("messageCreate", async (message) => {
 
   // 業務内容選択のプルダウン
   const taskSelect = new StringSelectMenuBuilder()
-    .setCustomId("selectTask")
+    .setCustomId("selectTask")  // 業務内容のプルダウンID
     .setPlaceholder("業務内容を選択")
     .addOptions(
       taskTypes.map((task) => ({
@@ -62,7 +62,7 @@ client.on("messageCreate", async (message) => {
 
   await message.reply({
     content: "担当者と業務内容を選択してください",
-    components: [row1, row2],
+    components: [row1, row2],  // プルダウンメニューを表示
   });
 });
 
@@ -74,17 +74,26 @@ client.on("interactionCreate", async (interaction) => {
   const selectedTask = interaction.customId === "selectTask" ? interaction.values[0] : null;
 
   if (selectedStaff && selectedTask) {
-    // Google Apps Scriptに送信
-    await axios.post(GAS_WEBHOOK_URL, {
-      username: selectedStaff,
-      task_type: selectedTask,
-      task_detail: "詳細未記入",  // 必要であればここに詳細内容を追加
-    });
+    try {
+      // Google Apps Scriptに送信
+      await axios.post(GAS_WEBHOOK_URL, {
+        username: selectedStaff,
+        task_type: selectedTask,
+        task_detail: "詳細未記入",  // 必要であればここに詳細内容を追加
+      });
 
-    await interaction.reply({
-      content: `✅ ${selectedStaff} が「${selectedTask}」を記録しました！`,
-      ephemeral: true,  // 返信はメッセージを送ったユーザーにのみ表示されます
-    });
+      // ユーザーに成功メッセージを送信
+      await interaction.reply({
+        content: `✅ ${selectedStaff} が「${selectedTask}」を記録しました！`,
+        ephemeral: true,  // 返信はメッセージを送ったユーザーにのみ表示
+      });
+    } catch (error) {
+      console.error("データ送信に失敗しました:", error);
+      await interaction.reply({
+        content: "データ送信に失敗しました。もう一度試してください。",
+        ephemeral: true,
+      });
+    }
   }
 });
 
